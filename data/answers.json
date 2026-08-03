@@ -1,0 +1,820 @@
+{
+  "words": [
+    {
+      "word": "ABOUT",
+      "difficulty": "easy"
+    },
+    {
+      "word": "ADAPT",
+      "difficulty": "medium"
+    },
+    {
+      "word": "ALBUM",
+      "difficulty": "medium"
+    },
+    {
+      "word": "ALERT",
+      "difficulty": "medium"
+    },
+    {
+      "word": "ALONE",
+      "difficulty": "medium"
+    },
+    {
+      "word": "APPLE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "BEACH",
+      "difficulty": "easy"
+    },
+    {
+      "word": "BLAZE",
+      "difficulty": "hard"
+    },
+    {
+      "word": "BLEND",
+      "difficulty": "medium"
+    },
+    {
+      "word": "BLOOM",
+      "difficulty": "medium"
+    },
+    {
+      "word": "BONUS",
+      "difficulty": "medium"
+    },
+    {
+      "word": "BRAIN",
+      "difficulty": "easy"
+    },
+    {
+      "word": "BRAVE",
+      "difficulty": "medium"
+    },
+    {
+      "word": "BREAD",
+      "difficulty": "easy"
+    },
+    {
+      "word": "BREAK",
+      "difficulty": "medium"
+    },
+    {
+      "word": "CHAIR",
+      "difficulty": "easy"
+    },
+    {
+      "word": "CHARM",
+      "difficulty": "easy"
+    },
+    {
+      "word": "CHEST",
+      "difficulty": "medium"
+    },
+    {
+      "word": "CLEAN",
+      "difficulty": "easy"
+    },
+    {
+      "word": "CLOCK",
+      "difficulty": "easy"
+    },
+    {
+      "word": "CLOUD",
+      "difficulty": "easy"
+    },
+    {
+      "word": "CORAL",
+      "difficulty": "medium"
+    },
+    {
+      "word": "CRAFT",
+      "difficulty": "medium"
+    },
+    {
+      "word": "CRANE",
+      "difficulty": "medium"
+    },
+    {
+      "word": "CREST",
+      "difficulty": "hard"
+    },
+    {
+      "word": "CRISP",
+      "difficulty": "hard"
+    },
+    {
+      "word": "DANCE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "DELTA",
+      "difficulty": "hard"
+    },
+    {
+      "word": "DODGE",
+      "difficulty": "medium"
+    },
+    {
+      "word": "DREAM",
+      "difficulty": "medium"
+    },
+    {
+      "word": "DRIFT",
+      "difficulty": "hard"
+    },
+    {
+      "word": "DUSKY",
+      "difficulty": "hard"
+    },
+    {
+      "word": "EAGLE",
+      "difficulty": "medium"
+    },
+    {
+      "word": "EARTH",
+      "difficulty": "easy"
+    },
+    {
+      "word": "ELITE",
+      "difficulty": "medium"
+    },
+    {
+      "word": "EMBER",
+      "difficulty": "medium"
+    },
+    {
+      "word": "EPOCH",
+      "difficulty": "hard"
+    },
+    {
+      "word": "FANCY",
+      "difficulty": "medium"
+    },
+    {
+      "word": "FIELD",
+      "difficulty": "easy"
+    },
+    {
+      "word": "FLAME",
+      "difficulty": "medium"
+    },
+    {
+      "word": "FLARE",
+      "difficulty": "hard"
+    },
+    {
+      "word": "FLINT",
+      "difficulty": "hard"
+    },
+    {
+      "word": "FRESH",
+      "difficulty": "medium"
+    },
+    {
+      "word": "FROST",
+      "difficulty": "hard"
+    },
+    {
+      "word": "GHOST",
+      "difficulty": "medium"
+    },
+    {
+      "word": "GLOBE",
+      "difficulty": "hard"
+    },
+    {
+      "word": "GLOSS",
+      "difficulty": "hard"
+    },
+    {
+      "word": "GRACE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "GRAIN",
+      "difficulty": "medium"
+    },
+    {
+      "word": "GREEN",
+      "difficulty": "easy"
+    },
+    {
+      "word": "GUEST",
+      "difficulty": "medium"
+    },
+    {
+      "word": "HAPPY",
+      "difficulty": "easy"
+    },
+    {
+      "word": "HASTE",
+      "difficulty": "hard"
+    },
+    {
+      "word": "HEART",
+      "difficulty": "easy"
+    },
+    {
+      "word": "HONEY",
+      "difficulty": "easy"
+    },
+    {
+      "word": "HORSE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "HOUSE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "HOVER",
+      "difficulty": "hard"
+    },
+    {
+      "word": "HUMOR",
+      "difficulty": "medium"
+    },
+    {
+      "word": "IMAGE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "INBOX",
+      "difficulty": "hard"
+    },
+    {
+      "word": "IVORY",
+      "difficulty": "hard"
+    },
+    {
+      "word": "JAZZY",
+      "difficulty": "hard"
+    },
+    {
+      "word": "JOLLY",
+      "difficulty": "hard"
+    },
+    {
+      "word": "JUMBO",
+      "difficulty": "medium"
+    },
+    {
+      "word": "JUMPS",
+      "difficulty": "medium"
+    },
+    {
+      "word": "KARMA",
+      "difficulty": "hard"
+    },
+    {
+      "word": "KIOSK",
+      "difficulty": "hard"
+    },
+    {
+      "word": "KNACK",
+      "difficulty": "hard"
+    },
+    {
+      "word": "KNEAD",
+      "difficulty": "medium"
+    },
+    {
+      "word": "LATCH",
+      "difficulty": "medium"
+    },
+    {
+      "word": "LAYER",
+      "difficulty": "medium"
+    },
+    {
+      "word": "LEAFY",
+      "difficulty": "medium"
+    },
+    {
+      "word": "LEMON",
+      "difficulty": "easy"
+    },
+    {
+      "word": "LIGHT",
+      "difficulty": "easy"
+    },
+    {
+      "word": "LUNAR",
+      "difficulty": "hard"
+    },
+    {
+      "word": "MAGIC",
+      "difficulty": "easy"
+    },
+    {
+      "word": "MANGO",
+      "difficulty": "easy"
+    },
+    {
+      "word": "MARCH",
+      "difficulty": "hard"
+    },
+    {
+      "word": "MELON",
+      "difficulty": "medium"
+    },
+    {
+      "word": "MICRO",
+      "difficulty": "hard"
+    },
+    {
+      "word": "MONEY",
+      "difficulty": "easy"
+    },
+    {
+      "word": "MUSIC",
+      "difficulty": "easy"
+    },
+    {
+      "word": "NEXUS",
+      "difficulty": "hard"
+    },
+    {
+      "word": "NIGHT",
+      "difficulty": "easy"
+    },
+    {
+      "word": "NORTH",
+      "difficulty": "medium"
+    },
+    {
+      "word": "NOVEL",
+      "difficulty": "hard"
+    },
+    {
+      "word": "NUDGE",
+      "difficulty": "hard"
+    },
+    {
+      "word": "OCEAN",
+      "difficulty": "easy"
+    },
+    {
+      "word": "OLIVE",
+      "difficulty": "hard"
+    },
+    {
+      "word": "OPERA",
+      "difficulty": "hard"
+    },
+    {
+      "word": "OZONE",
+      "difficulty": "hard"
+    },
+    {
+      "word": "PAINT",
+      "difficulty": "medium"
+    },
+    {
+      "word": "PANEL",
+      "difficulty": "easy"
+    },
+    {
+      "word": "PARTY",
+      "difficulty": "easy"
+    },
+    {
+      "word": "PEACE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "PHONE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "PIXEL",
+      "difficulty": "hard"
+    },
+    {
+      "word": "PIZZA",
+      "difficulty": "easy"
+    },
+    {
+      "word": "PLANE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "PLANT",
+      "difficulty": "easy"
+    },
+    {
+      "word": "POWER",
+      "difficulty": "easy"
+    },
+    {
+      "word": "PRIDE",
+      "difficulty": "medium"
+    },
+    {
+      "word": "PRISM",
+      "difficulty": "hard"
+    },
+    {
+      "word": "PULSE",
+      "difficulty": "hard"
+    },
+    {
+      "word": "QUART",
+      "difficulty": "hard"
+    },
+    {
+      "word": "QUEEN",
+      "difficulty": "easy"
+    },
+    {
+      "word": "QUERY",
+      "difficulty": "hard"
+    },
+    {
+      "word": "QUEST",
+      "difficulty": "hard"
+    },
+    {
+      "word": "QUICK",
+      "difficulty": "easy"
+    },
+    {
+      "word": "QUILT",
+      "difficulty": "hard"
+    },
+    {
+      "word": "RADIO",
+      "difficulty": "easy"
+    },
+    {
+      "word": "RAVEN",
+      "difficulty": "medium"
+    },
+    {
+      "word": "RHYME",
+      "difficulty": "hard"
+    },
+    {
+      "word": "RIVER",
+      "difficulty": "easy"
+    },
+    {
+      "word": "ROAST",
+      "difficulty": "hard"
+    },
+    {
+      "word": "ROBOT",
+      "difficulty": "easy"
+    },
+    {
+      "word": "ROUTE",
+      "difficulty": "medium"
+    },
+    {
+      "word": "SCOPE",
+      "difficulty": "hard"
+    },
+    {
+      "word": "SCOUT",
+      "difficulty": "hard"
+    },
+    {
+      "word": "SHARE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "SHARP",
+      "difficulty": "medium"
+    },
+    {
+      "word": "SHINE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "SKILL",
+      "difficulty": "medium"
+    },
+    {
+      "word": "SLEEP",
+      "difficulty": "easy"
+    },
+    {
+      "word": "SMART",
+      "difficulty": "easy"
+    },
+    {
+      "word": "SMILE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "SNAKE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "SOLAR",
+      "difficulty": "hard"
+    },
+    {
+      "word": "SOUND",
+      "difficulty": "easy"
+    },
+    {
+      "word": "SOUTH",
+      "difficulty": "easy"
+    },
+    {
+      "word": "SPACE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "SPIKE",
+      "difficulty": "medium"
+    },
+    {
+      "word": "SPORT",
+      "difficulty": "easy"
+    },
+    {
+      "word": "STAFF",
+      "difficulty": "easy"
+    },
+    {
+      "word": "STAGE",
+      "difficulty": "medium"
+    },
+    {
+      "word": "STAMP",
+      "difficulty": "medium"
+    },
+    {
+      "word": "STARS",
+      "difficulty": "easy"
+    },
+    {
+      "word": "START",
+      "difficulty": "easy"
+    },
+    {
+      "word": "STEAM",
+      "difficulty": "medium"
+    },
+    {
+      "word": "STEEL",
+      "difficulty": "easy"
+    },
+    {
+      "word": "STONE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "STORM",
+      "difficulty": "easy"
+    },
+    {
+      "word": "STORY",
+      "difficulty": "easy"
+    },
+    {
+      "word": "STYLE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "SUGAR",
+      "difficulty": "easy"
+    },
+    {
+      "word": "SUPER",
+      "difficulty": "easy"
+    },
+    {
+      "word": "SWEET",
+      "difficulty": "easy"
+    },
+    {
+      "word": "SWIFT",
+      "difficulty": "easy"
+    },
+    {
+      "word": "TABLE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "TEACH",
+      "difficulty": "easy"
+    },
+    {
+      "word": "TEMPO",
+      "difficulty": "hard"
+    },
+    {
+      "word": "THINK",
+      "difficulty": "easy"
+    },
+    {
+      "word": "TIGER",
+      "difficulty": "easy"
+    },
+    {
+      "word": "TODAY",
+      "difficulty": "easy"
+    },
+    {
+      "word": "TOKEN",
+      "difficulty": "hard"
+    },
+    {
+      "word": "TOWER",
+      "difficulty": "easy"
+    },
+    {
+      "word": "TRACK",
+      "difficulty": "easy"
+    },
+    {
+      "word": "TRAIL",
+      "difficulty": "easy"
+    },
+    {
+      "word": "TRAIN",
+      "difficulty": "easy"
+    },
+    {
+      "word": "TREND",
+      "difficulty": "easy"
+    },
+    {
+      "word": "TRUCK",
+      "difficulty": "easy"
+    },
+    {
+      "word": "TRUST",
+      "difficulty": "easy"
+    },
+    {
+      "word": "TULIP",
+      "difficulty": "hard"
+    },
+    {
+      "word": "TWEAK",
+      "difficulty": "medium"
+    },
+    {
+      "word": "ULTRA",
+      "difficulty": "hard"
+    },
+    {
+      "word": "UNIFY",
+      "difficulty": "hard"
+    },
+    {
+      "word": "UNION",
+      "difficulty": "easy"
+    },
+    {
+      "word": "UNZIP",
+      "difficulty": "hard"
+    },
+    {
+      "word": "URBAN",
+      "difficulty": "hard"
+    },
+    {
+      "word": "VALUE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "VAPOR",
+      "difficulty": "hard"
+    },
+    {
+      "word": "VAULT",
+      "difficulty": "hard"
+    },
+    {
+      "word": "VIBES",
+      "difficulty": "hard"
+    },
+    {
+      "word": "VIDEO",
+      "difficulty": "easy"
+    },
+    {
+      "word": "VITAL",
+      "difficulty": "hard"
+    },
+    {
+      "word": "VIVID",
+      "difficulty": "hard"
+    },
+    {
+      "word": "VOICE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "WALTZ",
+      "difficulty": "hard"
+    },
+    {
+      "word": "WASTE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "WATCH",
+      "difficulty": "easy"
+    },
+    {
+      "word": "WATER",
+      "difficulty": "easy"
+    },
+    {
+      "word": "WEDGE",
+      "difficulty": "hard"
+    },
+    {
+      "word": "WHEEL",
+      "difficulty": "easy"
+    },
+    {
+      "word": "WHILE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "WHITE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "WOMAN",
+      "difficulty": "easy"
+    },
+    {
+      "word": "WORLD",
+      "difficulty": "easy"
+    },
+    {
+      "word": "WORRY",
+      "difficulty": "easy"
+    },
+    {
+      "word": "WORTH",
+      "difficulty": "easy"
+    },
+    {
+      "word": "WOVEN",
+      "difficulty": "hard"
+    },
+    {
+      "word": "WRITE",
+      "difficulty": "easy"
+    },
+    {
+      "word": "XENIA",
+      "difficulty": "hard"
+    },
+    {
+      "word": "XENON",
+      "difficulty": "hard"
+    },
+    {
+      "word": "YACHT",
+      "difficulty": "hard"
+    },
+    {
+      "word": "YELLS",
+      "difficulty": "hard"
+    },
+    {
+      "word": "YIELD",
+      "difficulty": "hard"
+    },
+    {
+      "word": "YOGIC",
+      "difficulty": "hard"
+    },
+    {
+      "word": "YOUTH",
+      "difficulty": "easy"
+    },
+    {
+      "word": "ZEBRA",
+      "difficulty": "hard"
+    },
+    {
+      "word": "ZESTY",
+      "difficulty": "hard"
+    },
+    {
+      "word": "ZONAL",
+      "difficulty": "hard"
+    },
+    {
+      "word": "ZONED",
+      "difficulty": "hard"
+    },
+    {
+      "word": "ZONES",
+      "difficulty": "hard"
+    }
+  ]
+}
