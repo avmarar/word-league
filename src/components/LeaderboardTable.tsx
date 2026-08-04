@@ -1,11 +1,23 @@
+import { Flame, Medal } from "lucide-react";
+import { EmptyState } from "@/components/EmptyState";
+import { SectionCard } from "@/components/SectionCard";
+import { Badge } from "@/components/ui/badge";
 import { formatDuration } from "@/lib/dates";
 import type { ScoreDocument } from "@/lib/game/types";
+import { cn } from "@/lib/utils";
 
 type LeaderboardTableProps = {
   scores: ScoreDocument[];
   streaks?: Record<string, number>;
   title: string;
 };
+
+function rankBadge(index: number) {
+  if (index === 0) return { icon: Medal, className: "text-[color:var(--hint)]" };
+  if (index === 1) return { icon: Medal, className: "text-muted-foreground" };
+  if (index === 2) return { icon: Medal, className: "text-[color:var(--tile-present)]" };
+  return null;
+}
 
 export function LeaderboardTable({
   scores,
@@ -24,58 +36,120 @@ export function LeaderboardTable({
   const didNotFinish = scores.filter((score) => !score.won);
 
   return (
-    <section className="rounded-3xl border border-white/5 bg-white/[0.04] p-6">
-      <h2 className="mb-4 text-xl font-semibold text-white">{title}</h2>
-
+    <SectionCard title={title}>
       {winners.length === 0 && didNotFinish.length === 0 ? (
-        <p className="text-white/60">No scores yet. Be the first to play!</p>
+        <EmptyState
+          icon={Medal}
+          title="No scores yet"
+          description="Be the first to finish today's puzzle and claim the top spot."
+        />
       ) : (
         <div className="space-y-6">
           {winners.length > 0 && (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[480px] text-left text-sm">
-                <thead>
-                  <tr className="border-b border-white/10 text-white/60">
-                    <th className="py-2 pr-4">Rank</th>
-                    <th className="py-2 pr-4">Player</th>
-                    <th className="py-2 pr-4">Attempts</th>
-                    <th className="py-2 pr-4">Time</th>
-                    <th className="py-2">Streak</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {winners.map((score, index) => (
-                    <tr key={score.userId} className="border-b border-white/5">
-                      <td className="py-3 pr-4 font-semibold text-cyan-200">
-                        #{index + 1}
-                      </td>
-                      <td className="py-3 pr-4">{score.displayName}</td>
-                      <td className="py-3 pr-4">{score.attempts}/6</td>
-                      <td className="py-3 pr-4">
-                        {formatDuration(score.durationMs)}
-                      </td>
-                      <td className="py-3">
-                        {streaks[score.userId] ? (
-                          <span className="rounded-full bg-amber-400/20 px-2 py-1 text-xs text-amber-200">
-                            {streaks[score.userId]} day streak
-                          </span>
-                        ) : (
-                          "—"
-                        )}
-                      </td>
+            <>
+              <div className="hidden overflow-x-auto md:block">
+                <table className="w-full min-w-[480px] text-left text-sm">
+                  <caption className="sr-only">{title} rankings</caption>
+                  <thead>
+                    <tr className="border-b border-border text-muted-foreground">
+                      <th scope="col" className="py-2 pr-4">
+                        Rank
+                      </th>
+                      <th scope="col" className="py-2 pr-4">
+                        Player
+                      </th>
+                      <th scope="col" className="py-2 pr-4">
+                        Attempts
+                      </th>
+                      <th scope="col" className="py-2 pr-4">
+                        Time
+                      </th>
+                      <th scope="col" className="py-2">
+                        Streak
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {winners.map((score, index) => {
+                      const badge = rankBadge(index);
+                      return (
+                        <tr key={score.userId} className="border-b border-border/60">
+                          <td className="py-3 pr-4">
+                            <span className="flex items-center gap-2 font-display font-semibold text-primary">
+                              {badge ? (
+                                <badge.icon
+                                  aria-hidden="true"
+                                  className={cn("size-4", badge.className)}
+                                />
+                              ) : null}
+                              #{index + 1}
+                            </span>
+                          </td>
+                          <td className="py-3 pr-4 font-medium">{score.displayName}</td>
+                          <td className="py-3 pr-4">{score.attempts}/6</td>
+                          <td className="py-3 pr-4">
+                            {formatDuration(score.durationMs)}
+                          </td>
+                          <td className="py-3">
+                            {streaks[score.userId] ? (
+                              <Badge variant="outline" className="gap-1 border-[color:var(--hint)]/30 bg-[color:var(--hint)]/10 text-[color:var(--hint)]">
+                                <Flame aria-hidden="true" className="size-3" />
+                                {streaks[score.userId]} day streak
+                              </Badge>
+                            ) : (
+                              "—"
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="space-y-3 md:hidden" role="list" aria-label={`${title} rankings`}>
+                {winners.map((score, index) => {
+                  const badge = rankBadge(index);
+                  return (
+                    <div
+                      key={score.userId}
+                      role="listitem"
+                      className="rounded-xl border border-border/60 bg-muted/30 p-4"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-2 font-display font-semibold text-primary">
+                          {badge ? (
+                            <badge.icon
+                              aria-hidden="true"
+                              className={cn("size-4", badge.className)}
+                            />
+                          ) : null}
+                          #{index + 1} {score.displayName}
+                        </span>
+                        <span className="text-sm">{score.attempts}/6</span>
+                      </div>
+                      <div className="mt-2 flex items-center justify-between text-sm text-muted-foreground">
+                        <span>{formatDuration(score.durationMs)}</span>
+                        {streaks[score.userId] ? (
+                          <Badge variant="outline" className="gap-1 border-[color:var(--hint)]/30 text-[color:var(--hint)]">
+                            <Flame aria-hidden="true" className="size-3" />
+                            {streaks[score.userId]} day streak
+                          </Badge>
+                        ) : null}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           )}
 
           {didNotFinish.length > 0 && (
             <div>
-              <h3 className="mb-2 text-sm uppercase tracking-[0.2em] text-white/50">
+              <h3 className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Did not finish
               </h3>
-              <ul className="space-y-2 text-sm text-white/70">
+              <ul className="space-y-2 text-sm text-muted-foreground">
                 {didNotFinish.map((score) => (
                   <li key={score.userId}>
                     {score.displayName} — {score.attempts}/6 attempts
@@ -86,6 +160,6 @@ export function LeaderboardTable({
           )}
         </div>
       )}
-    </section>
+    </SectionCard>
   );
 }

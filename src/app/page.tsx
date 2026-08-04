@@ -2,9 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Calendar, Flame, Timer } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { DifficultyBadge } from "@/components/DifficultyBadge";
+import { PageHeader } from "@/components/PageHeader";
 import { ProfileFormCard } from "@/components/ProfileFormCard";
+import { SectionCard } from "@/components/SectionCard";
+import { StatTile } from "@/components/StatTile";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { buttonVariants } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import {
@@ -14,6 +20,7 @@ import {
 } from "@/lib/dates";
 import { getDailyDifficulty, getPuzzleNumber } from "@/lib/words/selector";
 import { DIFFICULTY_DESCRIPTIONS } from "@/lib/words/difficulty";
+import { cn } from "@/lib/utils";
 
 export default function HomePage() {
   const { uid, isReady, authState } = useAuth();
@@ -34,7 +41,9 @@ export default function HomePage() {
   if (authState.status === "error") {
     return (
       <AppShell active="home">
-        <p className="text-red-300">{authState.message}</p>
+        <Alert variant="destructive">
+          <AlertDescription>{authState.message}</AlertDescription>
+        </Alert>
       </AppShell>
     );
   }
@@ -42,63 +51,58 @@ export default function HomePage() {
   return (
     <AppShell active="home">
       <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-        <section className="rounded-3xl border border-white/5 bg-white/[0.04] p-8">
-          <div className="flex flex-wrap items-center gap-3">
-            <p className="text-sm uppercase tracking-[0.3em] text-cyan-200/80">
-              Daily puzzle
-            </p>
-            <DifficultyBadge difficulty={dailyDifficulty} />
+        <SectionCard contentClassName="space-y-6">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <PageHeader
+              eyebrow="Daily puzzle"
+              title={`Word League #${puzzleNumber}`}
+              description={`One shared five-letter puzzle every day at ${dailyDifficulty} difficulty. Play solo, compare scores on the office leaderboard, and keep your streak alive.`}
+            />
+            <DifficultyBadge difficulty={dailyDifficulty} className="mt-8 shrink-0" />
           </div>
-          <h1 className="mt-2 text-4xl font-semibold">
-            Word League #{puzzleNumber}
-          </h1>
-          <p className="mt-4 max-w-xl text-white/70">
-            One shared five-letter puzzle every day at{" "}
-            {dailyDifficulty} difficulty. Play solo, compare scores on the
-            office leaderboard, and keep your streak alive.
-          </p>
-          <p className="mt-2 text-sm text-white/50">
+
+          <p className="text-sm text-muted-foreground">
             {DIFFICULTY_DESCRIPTIONS[dailyDifficulty]}
           </p>
 
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-3">
             <Link
               href="/play"
-              className="btn-primary rounded-full bg-linear-to-r from-cyan-400 to-emerald-400 px-6 py-3 font-semibold transition hover:brightness-110"
+              className={cn(buttonVariants({ size: "lg" }), "rounded-full px-8 hover:scale-[1.02]")}
             >
               {profile.hasNickname ? "Play daily challenge" : "Set up & play"}
             </Link>
             <Link
               href="/practice"
-              className="rounded-full border border-white/10 px-6 py-3 font-semibold !text-white transition hover:bg-white/5"
+              className={cn(buttonVariants({ variant: "outline", size: "lg" }), "rounded-full")}
             >
               Practice
             </Link>
             <Link
               href="/leaderboard"
-              className="rounded-full border border-white/10 px-6 py-3 font-semibold !text-white transition hover:bg-white/5"
+              className={cn(buttonVariants({ variant: "outline", size: "lg" }), "rounded-full")}
             >
               Leaderboard
             </Link>
           </div>
 
-          <div className="mt-8 grid gap-4 sm:grid-cols-3">
-            <div className="rounded-2xl bg-black/20 p-4">
-              <p className="text-sm text-white/60">Today</p>
-              <p className="font-semibold">{dateKey}</p>
-            </div>
-            <div className="rounded-2xl bg-black/20 p-4">
-              <p className="text-sm text-white/60">Your streak</p>
-              <p className="font-semibold">
-                {isReady ? (profile.profile?.currentStreak ?? 0) : "—"} days
-              </p>
-            </div>
-            <div className="rounded-2xl bg-black/20 p-4">
-              <p className="text-sm text-white/60">Next puzzle in</p>
-              <p className="font-semibold">{countdown}</p>
-            </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            <StatTile label="Today" value={dateKey} icon={Calendar} />
+            <StatTile
+              label="Your streak"
+              value={isReady ? `${profile.profile?.currentStreak ?? 0} days` : "—"}
+              icon={Flame}
+              accent="hint"
+            />
+            <StatTile
+              label="Next puzzle in"
+              value={countdown}
+              icon={Timer}
+              accent="secondary"
+              valueClassName="motion-safe:animate-pulse"
+            />
           </div>
-        </section>
+        </SectionCard>
 
         <ProfileFormCard
           nickname={profile.nicknameInput}

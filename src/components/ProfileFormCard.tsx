@@ -1,4 +1,10 @@
 import type { FormEvent } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { SectionCard } from "@/components/SectionCard";
+import { cn } from "@/lib/utils";
 
 type ProfileFormCardProps = {
   nickname: string;
@@ -10,6 +16,53 @@ type ProfileFormCardProps = {
   compact?: boolean;
 };
 
+function ProfileForm({
+  nickname,
+  onNicknameChange,
+  onSubmit,
+  canSubmit,
+  saveState,
+  errorMessage,
+}: Omit<ProfileFormCardProps, "compact">) {
+  const errorId = "nickname-error";
+
+  return (
+    <form onSubmit={onSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="nickname">Nickname</Label>
+        <Input
+          id="nickname"
+          type="text"
+          value={nickname}
+          onChange={(event) => onNicknameChange(event.target.value)}
+          placeholder="e.g. Alex from Engineering"
+          maxLength={24}
+          aria-invalid={Boolean(errorMessage)}
+          aria-describedby={errorMessage ? errorId : undefined}
+          className="h-11 rounded-xl bg-input/50"
+        />
+      </div>
+      <Button
+        type="submit"
+        size="lg"
+        disabled={!canSubmit || saveState === "saving"}
+        className="rounded-full px-6"
+      >
+        {saveState === "saving"
+          ? "Saving…"
+          : saveState === "success"
+            ? "Saved!"
+            : "Save nickname"}
+      </Button>
+      {errorMessage && (
+        <p id={errorId} role="alert" className="text-sm text-destructive">
+          {errorMessage}
+        </p>
+      )}
+    </form>
+  );
+}
+
 export function ProfileFormCard({
   nickname,
   onNicknameChange,
@@ -19,46 +72,58 @@ export function ProfileFormCard({
   errorMessage,
   compact = false,
 }: ProfileFormCardProps) {
-  return (
-    <section className="rounded-3xl border border-white/5 bg-[#040a1c]/80 p-6 shadow-xl shadow-black/40">
-      <form onSubmit={onSubmit} className="space-y-4">
-        {!compact && (
-          <div className="space-y-2">
-            <p className="text-sm uppercase tracking-[0.3em] text-cyan-200/80">
-              Profile
-            </p>
-            <h2 className="text-2xl font-semibold text-white">
-              Choose your display name
-            </h2>
-            <p className="text-sm text-white/60">
-              This name appears on the daily leaderboard.
-            </p>
-          </div>
-        )}
-        <label className="flex flex-col gap-2">
-          <span className="text-sm text-white/70">Nickname *</span>
-          <input
-            type="text"
-            value={nickname}
-            onChange={(event) => onNicknameChange(event.target.value)}
-            placeholder="e.g. Alex from Engineering"
-            maxLength={24}
-            className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none transition focus:border-cyan-400"
+  const initial = nickname.trim().charAt(0).toUpperCase() || "?";
+
+  if (compact) {
+    return (
+      <Card className="border-border/60 bg-card/80 shadow-lg shadow-black/20">
+        <CardContent className="pt-6">
+          <ProfileForm
+            nickname={nickname}
+            onNicknameChange={onNicknameChange}
+            onSubmit={onSubmit}
+            canSubmit={canSubmit}
+            saveState={saveState}
+            errorMessage={errorMessage}
           />
-        </label>
-        <button
-          type="submit"
-          disabled={!canSubmit || saveState === "saving"}
-          className="btn-primary inline-flex items-center rounded-full bg-linear-to-r from-cyan-400 to-emerald-400 px-6 py-2 font-semibold outline-none transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <SectionCard className="overflow-hidden">
+      <div className="mb-4 flex items-center gap-4 border-b border-border/60 pb-4">
+        <div
+          className={cn(
+            "flex size-14 shrink-0 items-center justify-center rounded-full",
+            "bg-primary/20 font-display text-2xl font-bold text-primary"
+          )}
+          aria-hidden="true"
         >
-          {saveState === "saving"
-            ? "Saving…"
-            : saveState === "success"
-              ? "Saved!"
-              : "Save nickname"}
-        </button>
-        {errorMessage && <p className="text-sm text-red-300">{errorMessage}</p>}
-      </form>
-    </section>
+          {initial}
+        </div>
+        <div>
+          <p className="text-sm font-medium uppercase tracking-[0.25em] text-primary/80">
+            Profile
+          </p>
+          <h2 className="font-display text-2xl font-semibold">
+            Choose your display name
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            This name appears on the daily leaderboard.
+          </p>
+        </div>
+      </div>
+
+      <ProfileForm
+        nickname={nickname}
+        onNicknameChange={onNicknameChange}
+        onSubmit={onSubmit}
+        canSubmit={canSubmit}
+        saveState={saveState}
+        errorMessage={errorMessage}
+      />
+    </SectionCard>
   );
 }

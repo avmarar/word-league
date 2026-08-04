@@ -1,5 +1,13 @@
 import type { TileState } from "@/lib/game/types";
 import { MAX_ATTEMPTS, WORD_LENGTH } from "@/lib/game/types";
+import { tileAriaLabel } from "@/lib/game/a11y";
+import {
+  TILE_CURRENT_CLASS,
+  TILE_EMPTY_CLASS,
+  TILE_FLIPPING_CLASS,
+  TILE_STATE_CLASSES,
+} from "@/lib/game/tile-colors";
+import { cn } from "@/lib/utils";
 
 type GameBoardProps = {
   guesses: { word: string; evaluation: TileState[] }[];
@@ -7,27 +15,30 @@ type GameBoardProps = {
   shakeRow: number | null;
   revealRow: number | null;
   isComplete: boolean;
+  compact?: boolean;
+  celebrateRow?: number | null;
 };
 
-function tileClass(state: TileState | "empty" | "current", revealed: boolean) {
-  const base =
-    "flex h-14 w-14 items-center justify-center rounded-lg border text-xl font-bold uppercase sm:h-16 sm:w-16";
+function tileClass(
+  state: TileState | "empty" | "current",
+  revealed: boolean,
+  isPop: boolean
+) {
+  const base = "game-tile h-14 w-14 text-xl md:h-[4.25rem] md:w-[4.25rem] lg:h-16 lg:w-16";
 
   if (!revealed && state !== "empty" && state !== "current") {
-    return `${base} flip-cell border-white/20 bg-white/10 text-white`;
+    return cn(base, TILE_FLIPPING_CLASS);
   }
 
   switch (state) {
     case "correct":
-      return `${base} border-emerald-500 bg-emerald-500 text-white`;
     case "present":
-      return `${base} border-amber-500 bg-amber-500 text-white`;
     case "absent":
-      return `${base} border-zinc-600 bg-zinc-600 text-white`;
+      return cn(base, TILE_STATE_CLASSES[state]);
     case "current":
-      return `${base} border-cyan-400/60 bg-white/5 text-white`;
+      return cn(base, TILE_CURRENT_CLASS, isPop && "animate-tile-pop");
     default:
-      return `${base} border-white/15 bg-transparent text-white/80`;
+      return cn(base, TILE_EMPTY_CLASS);
   }
 }
 
@@ -37,21 +48,34 @@ export function GameBoard({
   shakeRow,
   revealRow,
   isComplete,
+  compact = false,
+  celebrateRow = null,
 }: GameBoardProps) {
   const activeRow = isComplete ? -1 : guesses.length;
+  const rowCount = compact ? Math.max(guesses.length, 1) : MAX_ATTEMPTS;
 
   return (
-    <div className="flex flex-col items-center gap-2">
-      {Array.from({ length: MAX_ATTEMPTS }).map((_, rowIndex) => {
+    <div
+      className="flex flex-col items-center gap-2"
+      role="grid"
+      aria-label="Game board"
+    >
+      {Array.from({ length: rowCount }).map((_, rowIndex) => {
         const guessRecord = guesses[rowIndex];
         const isActive = rowIndex === activeRow;
         const isShaking = shakeRow === rowIndex;
         const isRevealing = revealRow === rowIndex;
+        const isCelebrating = celebrateRow === rowIndex;
 
         return (
           <div
             key={rowIndex}
-            className={`flex gap-2 ${isShaking ? "animate-shake" : ""}`}
+            role="row"
+            className={cn(
+              "flex gap-2",
+              isShaking && "animate-shake",
+              isCelebrating && "animate-celebrate rounded-xl"
+            )}
           >
             {Array.from({ length: WORD_LENGTH }).map((__, colIndex) => {
               let state: TileState | "empty" | "current" = "empty";
@@ -66,18 +90,24 @@ export function GameBoard({
               }
 
               const revealed = Boolean(guessRecord) && !isRevealing;
+              const isPop =
+                isActive &&
+                letter === currentGuess[colIndex] &&
+                currentGuess.length === colIndex + 1;
 
               return (
                 <div
                   key={colIndex}
-                  className={tileClass(state, revealed)}
+                  role="gridcell"
+                  aria-label={tileAriaLabel(letter, state, revealed)}
+                  className={tileClass(state, revealed, Boolean(isPop))}
                   style={
                     isRevealing
                       ? { animationDelay: `${colIndex * 100}ms` }
                       : undefined
                   }
                 >
-                  {letter}
+                  <span aria-hidden="true">{letter}</span>
                 </div>
               );
             })}

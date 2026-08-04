@@ -2,12 +2,14 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
+import { GameLoadingSkeleton } from "@/components/GameLoadingSkeleton";
 import { GamePlayPanel, type GamePlayState } from "@/components/GamePlayPanel";
 import { ProfileFormCard } from "@/components/ProfileFormCard";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { apiPost } from "@/lib/api/client";
-import { getDateKey } from "@/lib/dates";
 
 type DailyGameState = GamePlayState & {
   puzzleNumber: number;
@@ -21,8 +23,6 @@ export default function PlayPage() {
   const [game, setGame] = useState<DailyGameState | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const dateKey = getDateKey();
 
   const loadGame = useCallback(async () => {
     if (!isReady) {
@@ -59,7 +59,10 @@ export default function PlayPage() {
   if (authState.status === "error") {
     return (
       <AppShell active="play">
-        <p className="text-red-300">{authState.message}</p>
+        <Alert variant="destructive">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{authState.message}</AlertDescription>
+        </Alert>
       </AppShell>
     );
   }
@@ -67,11 +70,15 @@ export default function PlayPage() {
   if (!isReady || !profile.isLoaded || loading) {
     return (
       <AppShell active="play">
-        <p className="text-white/70">
-          {!isReady || !profile.isLoaded
-            ? "Connecting…"
-            : "Loading today's puzzle…"}
-        </p>
+        {!isReady || !profile.isLoaded ? (
+          <div aria-busy="true" aria-live="polite" className="space-y-3">
+            <p className="sr-only">Connecting…</p>
+            <Skeleton className="h-8 w-48" />
+            <GameLoadingSkeleton label="Connecting" />
+          </div>
+        ) : (
+          <GameLoadingSkeleton label="Loading today's puzzle" />
+        )}
       </AppShell>
     );
   }
@@ -80,10 +87,10 @@ export default function PlayPage() {
     return (
       <AppShell active="play">
         <div className="mx-auto max-w-md space-y-4">
-          {profile.profileError && (
-            <p className="text-red-300">{profile.profileError}</p>
-          )}
-          <p className="text-white/70">
+          <h1 className="text-center font-display text-2xl font-semibold">
+            Daily puzzle
+          </h1>
+          <p className="text-center text-muted-foreground">
             Set a nickname before joining today&apos;s puzzle.
           </p>
           <ProfileFormCard
@@ -93,6 +100,7 @@ export default function PlayPage() {
             canSubmit={Boolean(uid)}
             saveState={profile.saveState}
             errorMessage={profile.profileError}
+            compact
           />
         </div>
       </AppShell>
@@ -102,7 +110,10 @@ export default function PlayPage() {
   if (!game) {
     return (
       <AppShell active="play">
-        <p className="text-red-300">{error ?? "Unable to start game."}</p>
+        <Alert variant="destructive">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error ?? "Unable to start game."}</AlertDescription>
+        </Alert>
       </AppShell>
     );
   }
