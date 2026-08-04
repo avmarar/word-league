@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 type ShareResultButtonProps = {
   shareGrid: string | null;
@@ -17,19 +19,17 @@ export function ShareResultButton({ shareGrid }: ShareResultButtonProps) {
     try {
       await navigator.clipboard.writeText(shareGrid);
       setCopied(true);
+      toast.success("Result copied to clipboard!");
       setTimeout(() => setCopied(false), 2000);
     } catch {
+      toast.error("Could not copy result.");
       setCopied(false);
     }
   };
 
   return (
-    <button
-      type="button"
-      onClick={handleCopy}
-      className="btn-primary rounded-full bg-cyan-400 px-6 py-2 font-semibold transition hover:brightness-110"
-    >
+    <Button size="lg" className="rounded-full px-6" onClick={handleCopy}>
       {copied ? "Copied!" : "Share result"}
-    </button>
+    </Button>
   );
 }

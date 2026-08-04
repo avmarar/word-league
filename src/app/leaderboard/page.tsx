@@ -11,6 +11,10 @@ import {
 } from "firebase/firestore";
 import { AppShell } from "@/components/AppShell";
 import { LeaderboardTable } from "@/components/LeaderboardTable";
+import { PageHeader } from "@/components/PageHeader";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { getDateKey, getWeekDateKeys } from "@/lib/dates";
 import {
@@ -141,7 +145,20 @@ export default function LeaderboardPage() {
   if (authState.status === "error") {
     return (
       <AppShell active="leaderboard">
-        <p className="text-red-300">{authState.message}</p>
+        <Alert variant="destructive">
+          <AlertDescription>{authState.message}</AlertDescription>
+        </Alert>
+      </AppShell>
+    );
+  }
+
+  if (!isReady) {
+    return (
+      <AppShell active="leaderboard">
+        <div className="space-y-4">
+          <Skeleton className="h-10 w-48" />
+          <Skeleton className="h-64 w-full rounded-2xl" />
+        </div>
       </AppShell>
     );
   }
@@ -149,51 +166,42 @@ export default function LeaderboardPage() {
   return (
     <AppShell active="leaderboard">
       <div className="space-y-6">
-        <div>
-          <p className="text-sm uppercase tracking-[0.3em] text-cyan-200/80">
-            Rankings
-          </p>
-          <h1 className="text-3xl font-semibold">Leaderboard</h1>
-        </div>
+        <PageHeader
+          eyebrow="Rankings"
+          title="Leaderboard"
+          description="Fewer guesses and faster times rank higher. Streaks show who's been showing up daily."
+        />
 
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => setTab("today")}
-            className={`rounded-full px-4 py-2 text-sm ${
-              tab === "today"
-                ? "bg-cyan-400/20 text-cyan-200"
-                : "bg-white/5 text-white/70"
-            }`}
-          >
-            Today
-          </button>
-          <button
-            type="button"
-            onClick={() => setTab("week")}
-            className={`rounded-full px-4 py-2 text-sm ${
-              tab === "week"
-                ? "bg-cyan-400/20 text-cyan-200"
-                : "bg-white/5 text-white/70"
-            }`}
-          >
-            This week
-          </button>
-        </div>
+        <Tabs
+          value={tab}
+          onValueChange={(value) => setTab(value as Tab)}
+          className="space-y-4"
+        >
+          <TabsList className="rounded-full bg-muted/50 p-1">
+            <TabsTrigger value="today" className="rounded-full px-5">
+              Today
+            </TabsTrigger>
+            <TabsTrigger value="week" className="rounded-full px-5">
+              This week
+            </TabsTrigger>
+          </TabsList>
 
-        {tab === "today" ? (
-          <LeaderboardTable
-            title={`Today (${dateKey})`}
-            scores={todayScores}
-            streaks={streaks}
-          />
-        ) : (
-          <LeaderboardTable
-            title="Best wins this week"
-            scores={weekScores}
-            streaks={streaks}
-          />
-        )}
+          <TabsContent value="today">
+            <LeaderboardTable
+              title={`Today (${dateKey})`}
+              scores={todayScores}
+              streaks={streaks}
+            />
+          </TabsContent>
+
+          <TabsContent value="week">
+            <LeaderboardTable
+              title="Best wins this week"
+              scores={weekScores}
+              streaks={streaks}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
     </AppShell>
   );

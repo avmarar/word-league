@@ -2,12 +2,19 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { Lightbulb, PartyPopper, RotateCcw } from "lucide-react";
+import { toast } from "sonner";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { GameBoard } from "@/components/GameBoard";
 import { buildKeyStates, Keyboard } from "@/components/Keyboard";
 import { GameStatusBar } from "@/components/GameStatusBar";
 import { ShareResultButton } from "@/components/ShareResultButton";
 import { DifficultyBadge } from "@/components/DifficultyBadge";
-import type { GameStatus, GuessRecord, TileState } from "@/lib/game/types";
+import { SectionCard } from "@/components/SectionCard";
+import { describeGameResult, describeGuess } from "@/lib/game/a11y";
+import type { GameStatus, GuessRecord } from "@/lib/game/types";
 import { MAX_ATTEMPTS, WORD_LENGTH } from "@/lib/game/types";
 import type { Difficulty } from "@/lib/words/difficulty";
 
@@ -55,11 +62,21 @@ export function GamePlayPanel({
   const [loadingHint, setLoadingHint] = useState(false);
   const [currentGuess, setCurrentGuess] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [shakeRow, setShakeRow] = useState<number | null>(null);
   const [revealRow, setRevealRow] = useState<number | null>(null);
-  const [startedAt] = useState(Date.now());
+  const [startedAt] = useState(() => Date.now());
   const [elapsedMs, setElapsedMs] = useState(0);
+  const [announcement, setAnnouncement] = useState(() =>
+    game.status === "in_progress"
+      ? `Attempt ${game.guesses.length + 1} of ${MAX_ATTEMPTS}.`
+      : game.status === "won"
+        ? describeGameResult("won", game.guesses.length)
+        : describeGameResult("lost", game.guesses.length)
+  );
+
+  const announce = useCallback((message: string) => {
+    setAnnouncement(message);
+  }, []);
 
   useEffect(() => {
     setGuesses(game.guesses);
@@ -88,13 +105,13 @@ export function GamePlayPanel({
     }
 
     if (currentGuess.length !== WORD_LENGTH) {
+      announce("Not enough letters. Enter five letters.");
       setShakeRow(guesses.length);
       setTimeout(() => setShakeRow(null), 500);
       return;
     }
 
     setSubmitting(true);
-    setError(null);
     setRevealRow(guesses.length);
 
     try {
@@ -106,6 +123,23 @@ export function GamePlayPanel({
       setShareGrid(result.shareGrid);
       setCurrentGuess("");
       setRevealRow(null);
+
+      const lastGuess = result.guesses.at(-1);
+      if (lastGuess) {
+        if (result.status === "won") {
+          announce(
+            `${describeGuess(lastGuess)} ${describeGameResult("won", result.guesses.length)}`
+          );
+        } else if (result.status === "lost") {
+          announce(
+            `${describeGuess(lastGuess)} ${describeGameResult("lost", result.guesses.length)}`
+          );
+        } else {
+          announce(
+            `${describeGuess(lastGuess)} Attempt ${result.guesses.length + 1} of ${MAX_ATTEMPTS}.`
+          );
+        }
+      }
     } catch (submitError) {
       setRevealRow(null);
       const message =
@@ -113,14 +147,17 @@ export function GamePlayPanel({
           ? submitError.message
           : "Unable to submit guess.";
       if (message === "Not in word list.") {
+        announce("Not in word list.");
         setShakeRow(guesses.length);
         setTimeout(() => setShakeRow(null), 500);
+      } else {
+        announce(message);
       }
-      setError(message);
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
-  }, [status, submitting, currentGuess, guesses.length, onSubmitGuess]);
+  }, [status, submitting, currentGuess, guesses.length, onSubmitGuess, announce]);
 
   const handleKey = useCallback(
     (key: string) => {
@@ -198,34 +235,38 @@ export function GamePlayPanel({
     }
 
     setLoadingHint(true);
-    setError(null);
 
     try {
       const result = await onRequestHint();
       setHintUsed(result.hintUsed);
       setHint(result.hint);
+      announce("Hint revealed. Word meaning is available below.");
     } catch (hintError) {
-      setError(
-        hintError instanceof Error ? hintError.message : "Unable to fetch hint."
-      );
+      const message =
+        hintError instanceof Error ? hintError.message : "Unable to fetch hint.";
+      announce(message);
+      toast.error(message);
     } finally {
       setLoadingHint(false);
     }
   };
 
   const isComplete = status !== "in_progress";
+  const celebrateRow = status === "won" ? guesses.length - 1 : null;
+
+  const pageTitle =
+    mode === "daily" && game.puzzleNumber !== undefined
+      ? `Daily puzzle #${game.puzzleNumber}`
+      : "Practice game";
 
   return (
-    <div className="mx-auto flex max-w-xl flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-lg flex-col gap-6 md:max-w-3xl lg:max-w-lg">
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {announcement}
+      </div>
+
       <div className="flex flex-wrap items-center gap-3">
-        {mode === "daily" && game.puzzleNumber !== undefined && (
-          <p className="text-sm text-white/60">
-            Daily puzzle #{game.puzzleNumber}
-          </p>
-        )}
-        {mode === "practice" && (
-          <p className="text-sm text-white/60">Practice mode</p>
-        )}
+        <h1 className="font-display text-xl font-semibold md:text-2xl">{pageTitle}</h1>
         {game.difficulty && <DifficultyBadge difficulty={game.difficulty} />}
       </div>
 
@@ -238,58 +279,75 @@ export function GamePlayPanel({
         mode={mode}
       />
 
-      <GameBoard
-        guesses={guesses}
-        currentGuess={currentGuess}
-        shakeRow={shakeRow}
-        revealRow={revealRow}
-        isComplete={isComplete}
-      />
-
-      {!isComplete && (
-        <>
-          <Keyboard
-            keyStates={buildKeyStates(guesses)}
-            onKey={handleKey}
-            disabled={submitting}
+      <div
+        className={cn(
+          "flex flex-col gap-6",
+          !isComplete &&
+            "md:grid md:grid-cols-[auto_minmax(0,1fr)] md:items-start md:gap-8 lg:flex lg:flex-col"
+        )}
+      >
+        <div className="flex justify-center md:justify-start lg:justify-center">
+          <GameBoard
+            guesses={guesses}
+            currentGuess={currentGuess}
+            shakeRow={shakeRow}
+            revealRow={revealRow}
+            isComplete={isComplete}
+            celebrateRow={celebrateRow}
           />
+        </div>
 
-          {onRequestHint && (
-            <div className="flex flex-col items-center gap-3">
-              <button
-                type="button"
-                onClick={() => void handleHint()}
-                disabled={hintUsed || loadingHint || submitting}
-                className="rounded-full border border-amber-400/30 bg-amber-400/10 px-5 py-2 text-sm font-semibold text-amber-200 transition hover:bg-amber-400/20 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {loadingHint
-                  ? "Loading hint…"
-                  : hintUsed
-                    ? "Hint used"
-                    : "Get hint"}
-              </button>
+        {!isComplete && (
+          <div className="flex flex-col gap-4 md:pt-2 lg:pt-0">
+            <Keyboard
+              keyStates={buildKeyStates(guesses)}
+              onKey={handleKey}
+              disabled={submitting}
+            />
 
-              {hint && (
-                <div className="w-full rounded-2xl border border-amber-400/20 bg-amber-400/10 px-4 py-3 text-sm text-amber-50">
-                  <p className="text-xs uppercase tracking-[0.2em] text-amber-200/80">
-                    Word meaning
-                  </p>
-                  <p className="mt-2 leading-relaxed">{hint}</p>
-                </div>
-              )}
-            </div>
-          )}
-        </>
-      )}
+            {onRequestHint && (
+              <div className="flex flex-col items-center gap-3 md:items-stretch">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => void handleHint()}
+                  disabled={hintUsed || loadingHint || submitting}
+                  className="rounded-full border-[color:var(--hint)]/40 text-[color:var(--hint)] hover:bg-[color:var(--hint)]/10"
+                >
+                  <Lightbulb aria-hidden="true" className="size-4" />
+                  {loadingHint
+                    ? "Loading hint…"
+                    : hintUsed
+                      ? "Hint used"
+                      : "Get hint"}
+                </Button>
 
-      {error && <p className="text-center text-sm text-red-300">{error}</p>}
+                {hint && (
+                  <Alert className="w-full border-[color:var(--hint)]/30 bg-[color:var(--hint)]/10">
+                    <Lightbulb aria-hidden="true" className="text-[color:var(--hint)]" />
+                    <AlertTitle className="text-[color:var(--hint)]">
+                      Word meaning
+                    </AlertTitle>
+                    <AlertDescription className="text-foreground/90">
+                      {hint}
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {isComplete && (
-        <div className="rounded-3xl border border-white/5 bg-white/[0.04] p-6 text-center">
-          <h2 className="text-2xl font-semibold">
+        <SectionCard contentClassName="text-center">
+          <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-secondary/15">
+            <PartyPopper aria-hidden="true" className="size-6 text-secondary" />
+          </div>
+          <h2 className="font-display text-2xl font-semibold">
             {status === "won" ? "Nice work!" : "Keep practicing"}
           </h2>
-          <p className="mt-2 text-white/70">
+          <p className="mt-2 text-muted-foreground">
             {status === "won"
               ? mode === "daily"
                 ? `You solved today's puzzle in ${guesses.length} tries.`
@@ -304,31 +362,28 @@ export function GamePlayPanel({
                 <ShareResultButton shareGrid={shareGrid} />
                 <Link
                   href="/leaderboard"
-                  className="rounded-full border border-white/10 px-6 py-2 text-sm font-semibold !text-white hover:bg-white/5"
+                  className={cn(buttonVariants({ variant: "outline", size: "lg" }), "rounded-full")}
                 >
                   View leaderboard
                 </Link>
               </>
             )}
             {mode === "practice" && onPlayAgain && (
-              <button
-                type="button"
-                onClick={onPlayAgain}
-                className="btn-primary rounded-full bg-linear-to-r from-cyan-400 to-emerald-400 px-6 py-2 font-semibold transition hover:brightness-110"
-              >
+              <Button size="lg" className="rounded-full" onClick={onPlayAgain}>
+                <RotateCcw aria-hidden="true" className="size-4" />
                 {playAgainLabel}
-              </button>
+              </Button>
             )}
             {mode === "practice" && (
               <Link
                 href="/practice"
-                className="rounded-full border border-white/10 px-6 py-2 text-sm font-semibold !text-white hover:bg-white/5"
+                className={cn(buttonVariants({ variant: "outline", size: "lg" }), "rounded-full")}
               >
                 Change difficulty
               </Link>
             )}
           </div>
-        </div>
+        </SectionCard>
       )}
     </div>
   );

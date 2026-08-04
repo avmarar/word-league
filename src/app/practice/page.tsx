@@ -1,10 +1,16 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { Sparkles, Target, Zap } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { DifficultyBadge } from "@/components/DifficultyBadge";
+import { GameLoadingSkeleton } from "@/components/GameLoadingSkeleton";
 import { GamePlayPanel, type GamePlayState } from "@/components/GamePlayPanel";
+import { PageHeader } from "@/components/PageHeader";
 import { ProfileFormCard } from "@/components/ProfileFormCard";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { apiPost } from "@/lib/api/client";
@@ -14,9 +20,16 @@ import {
   DIFFICULTY_DESCRIPTIONS,
   DIFFICULTY_LABELS,
 } from "@/lib/words/difficulty";
+import { cn } from "@/lib/utils";
 
 type PracticeSession = GamePlayState & {
   sessionId: string;
+};
+
+const difficultyIcons: Record<Difficulty, typeof Sparkles> = {
+  easy: Sparkles,
+  medium: Target,
+  hard: Zap,
 };
 
 export default function PracticePage() {
@@ -52,7 +65,9 @@ export default function PracticePage() {
   if (authState.status === "error") {
     return (
       <AppShell active="practice">
-        <p className="text-red-300">{authState.message}</p>
+        <Alert variant="destructive">
+          <AlertDescription>{authState.message}</AlertDescription>
+        </Alert>
       </AppShell>
     );
   }
@@ -60,7 +75,16 @@ export default function PracticePage() {
   if (!isReady || !profile.isLoaded) {
     return (
       <AppShell active="practice">
-        <p className="text-white/70">Connecting…</p>
+        <div aria-busy="true" aria-live="polite" className="space-y-4">
+          <p className="sr-only">Loading practice…</p>
+          <Skeleton className="h-10 w-64" />
+          <Skeleton className="h-4 w-96" />
+          <div className="grid gap-4 md:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <Skeleton key={index} className="h-40 rounded-2xl" />
+            ))}
+          </div>
+        </div>
       </AppShell>
     );
   }
@@ -69,7 +93,10 @@ export default function PracticePage() {
     return (
       <AppShell active="practice">
         <div className="mx-auto max-w-md space-y-4">
-          <p className="text-white/70">
+          <h1 className="text-center font-display text-2xl font-semibold">
+            Practice
+          </h1>
+          <p className="text-center text-muted-foreground">
             Set a nickname before starting practice rounds.
           </p>
           <ProfileFormCard
@@ -79,6 +106,7 @@ export default function PracticePage() {
             canSubmit={Boolean(uid)}
             saveState={profile.saveState}
             errorMessage={profile.profileError}
+            compact
           />
         </div>
       </AppShell>
@@ -89,53 +117,73 @@ export default function PracticePage() {
     return (
       <AppShell active="practice">
         <div className="space-y-6">
-          <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-cyan-200/80">
-              Practice
-            </p>
-            <h1 className="text-3xl font-semibold">Choose a difficulty</h1>
-            <p className="mt-2 max-w-2xl text-white/70">
-              Unlimited practice rounds with no impact on your daily score or
-              streak. Pick a level and sharpen your skills.
-            </p>
+          <PageHeader
+            eyebrow="Practice"
+            title="Choose a difficulty"
+            description="Unlimited practice rounds with no impact on your daily score or streak. Pick a level and sharpen your skills."
+          />
+
+          <div
+            className="grid gap-4 md:grid-cols-3"
+            role="group"
+            aria-label="Choose difficulty"
+          >
+            {DIFFICULTIES.map((difficulty) => {
+              const Icon = difficultyIcons[difficulty];
+              const selected = selectedDifficulty === difficulty;
+              return (
+                <button
+                  key={difficulty}
+                  type="button"
+                  aria-pressed={selected}
+                  onClick={() => setSelectedDifficulty(difficulty)}
+                  className={cn(
+                    "rounded-2xl border p-6 text-left transition hover:scale-[1.01]",
+                    selected
+                      ? "border-primary bg-primary/10 ring-2 ring-primary/30"
+                      : "border-border/60 bg-card/60 hover:bg-muted/40"
+                  )}
+                >
+                  <div className="flex items-center justify-between">
+                    <DifficultyBadge difficulty={difficulty} />
+                    <Icon aria-hidden="true" className="size-5 text-muted-foreground" />
+                  </div>
+                  <p className="mt-3 font-display text-xl font-semibold">
+                    {DIFFICULTY_LABELS[difficulty]}
+                  </p>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {DIFFICULTY_DESCRIPTIONS[difficulty]}
+                  </p>
+                </button>
+              );
+            })}
           </div>
 
-          <div className="grid gap-4 md:grid-cols-3">
-            {DIFFICULTIES.map((difficulty) => (
-              <button
-                key={difficulty}
-                type="button"
-                onClick={() => setSelectedDifficulty(difficulty)}
-                className={`rounded-3xl border p-6 text-left transition ${
-                  selectedDifficulty === difficulty
-                    ? "border-cyan-400/50 bg-cyan-400/10"
-                    : "border-white/5 bg-white/[0.04] hover:bg-white/[0.06]"
-                }`}
-              >
-                <DifficultyBadge difficulty={difficulty} />
-                <h2 className="mt-3 text-xl font-semibold">
-                  {DIFFICULTY_LABELS[difficulty]}
-                </h2>
-                <p className="mt-2 text-sm text-white/70">
-                  {DIFFICULTY_DESCRIPTIONS[difficulty]}
-                </p>
-              </button>
-            ))}
-          </div>
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
 
-          {error && <p className="text-red-300">{error}</p>}
-
-          <button
-            type="button"
+          <Button
+            size="lg"
+            className="rounded-full px-8"
             disabled={loading}
             onClick={() => void startPractice(selectedDifficulty)}
-            className="btn-primary rounded-full bg-linear-to-r from-cyan-400 to-emerald-400 px-6 py-3 font-semibold transition hover:brightness-110 disabled:opacity-50"
           >
             {loading
               ? "Starting…"
               : `Start ${DIFFICULTY_LABELS[selectedDifficulty]} practice`}
-          </button>
+          </Button>
         </div>
+      </AppShell>
+    );
+  }
+
+  if (loading) {
+    return (
+      <AppShell active="practice">
+        <GameLoadingSkeleton label="Starting practice" />
       </AppShell>
     );
   }

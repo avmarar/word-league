@@ -1,23 +1,77 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #05030b;
-  --foreground: #f3f6ff;
-  --muted: #7286a0;
-  --accent: #00d1ff;
-  --accent-strong: #43ffb1;
-  --panel: rgba(4, 12, 30, 0.75);
+  --background: oklch(0.14 0.04 290);
+  --foreground: oklch(0.96 0.01 290);
+  --card: oklch(0.19 0.05 295);
+  --card-foreground: oklch(0.96 0.01 290);
+  --popover: oklch(0.19 0.05 295);
+  --popover-foreground: oklch(0.96 0.01 290);
+  --primary: oklch(0.72 0.19 310);
+  --primary-foreground: oklch(0.16 0.04 290);
+  --secondary: oklch(0.82 0.16 145);
+  --secondary-foreground: oklch(0.18 0.04 145);
+  --muted: oklch(0.24 0.04 295);
+  --muted-foreground: oklch(0.72 0.03 290);
+  --accent: oklch(0.28 0.06 300);
+  --accent-foreground: oklch(0.92 0.04 310);
+  --destructive: oklch(0.62 0.22 25);
+  --border: oklch(0.32 0.05 295 / 55%);
+  --input: oklch(0.28 0.05 295 / 70%);
+  --ring: oklch(0.72 0.19 310 / 55%);
+  --radius: 0.875rem;
+
+  --tile-correct: oklch(0.68 0.19 145);
+  --tile-present: oklch(0.76 0.16 75);
+  --tile-absent: oklch(0.38 0.04 295);
+  --tile-current: oklch(0.72 0.19 310);
+  --tile-empty-border: oklch(0.45 0.05 295 / 45%);
+  --hint: oklch(0.74 0.15 55);
+
+  --chart-1: oklch(0.72 0.19 310);
+  --chart-2: oklch(0.82 0.16 145);
+  --chart-3: oklch(0.76 0.16 75);
+  --chart-4: oklch(0.74 0.15 55);
+  --chart-5: oklch(0.62 0.22 25);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
-  --color-panel: var(--panel);
+  --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
-  --color-accent-strong: var(--accent-strong);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-tile-correct: var(--tile-correct);
+  --color-tile-present: var(--tile-present);
+  --color-tile-absent: var(--tile-absent);
+  --color-tile-current: var(--tile-current);
+  --color-hint: var(--hint);
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-fredoka);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 @layer base {
@@ -27,40 +81,59 @@
     box-sizing: border-box;
   }
 
+  html {
+    @apply font-sans;
+  }
+
   body {
     min-height: 100vh;
     margin: 0;
-    background: radial-gradient(
-        circle at 20% 20%,
-        rgba(0, 220, 255, 0.1),
-        transparent 40%
+    background:
+      radial-gradient(
+        circle at 15% 10%,
+        oklch(0.55 0.2 310 / 18%),
+        transparent 42%
       ),
       radial-gradient(
-        circle at 80% 0%,
-        rgba(67, 255, 177, 0.12),
+        circle at 85% 5%,
+        oklch(0.75 0.16 145 / 12%),
         transparent 38%
       ),
       var(--background);
     color: var(--foreground);
-    font-family: var(--font-geist-sans), system-ui, -apple-system,
-      BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: var(--font-geist-sans), system-ui, sans-serif;
     line-height: 1.5;
+    @apply bg-background text-foreground;
   }
 
   a {
-    color: var(--accent);
+    @apply text-primary transition-colors hover:text-primary/80;
     text-decoration: none;
+  }
+
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-fredoka), var(--font-geist-sans), system-ui, sans-serif;
   }
 }
 
 @layer components {
-  .btn-primary {
-    color: #04101b !important;
+  .font-display {
+    font-family: var(--font-fredoka), var(--font-geist-sans), system-ui, sans-serif;
   }
 
-  .btn-primary:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  .game-tile {
+    @apply flex items-center justify-center rounded-xl border-2 font-bold uppercase;
+    font-family: var(--font-fredoka), var(--font-geist-sans), system-ui, sans-serif;
+  }
+
+  .nav-pill-active {
+    @apply bg-primary/20 text-primary scale-[1.02];
   }
 }
 
@@ -87,7 +160,10 @@
   0% {
     transform: rotateX(0);
   }
-  50% {
+  45% {
+    transform: rotateX(90deg);
+  }
+  55% {
     transform: rotateX(90deg);
   }
   100% {
@@ -96,5 +172,73 @@
 }
 
 .flip-cell {
-  animation: flip 0.5s ease-in-out forwards;
+  animation: flip 0.55s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+}
+
+@keyframes tile-pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-tile-pop {
+  animation: tile-pop 0.15s ease-out;
+}
+
+@keyframes celebrate {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 oklch(0.82 0.16 145 / 0%);
+  }
+  50% {
+    box-shadow: 0 0 24px 4px oklch(0.82 0.16 145 / 35%);
+  }
+}
+
+.animate-celebrate {
+  animation: celebrate 0.8s ease-in-out 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-shake,
+  .flip-cell,
+  .animate-tile-pop,
+  .animate-celebrate {
+    animation: none;
+  }
+
+  .nav-pill-active {
+    transform: none;
+  }
+}
+
+@layer utilities {
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .focus\:not-sr-only:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: inherit;
+    margin: inherit;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
 }

@@ -10,9 +10,15 @@ import {
   query,
   where,
 } from "firebase/firestore";
+import { BarChart3, Flame, Percent, Target } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { GameBoard } from "@/components/GameBoard";
+import { PageHeader } from "@/components/PageHeader";
 import { ProfileFormCard } from "@/components/ProfileFormCard";
+import { SectionCard } from "@/components/SectionCard";
+import { StatTile } from "@/components/StatTile";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { getDateKey } from "@/lib/dates";
@@ -25,6 +31,7 @@ import {
 } from "@/lib/game/types";
 import { getFirestoreDb } from "@/lib/firebase/client";
 import { getGameDocId } from "@/lib/game/ids";
+import { cn } from "@/lib/utils";
 
 export default function StatsPage() {
   const { uid, isReady, authState } = useAuth();
@@ -90,7 +97,9 @@ export default function StatsPage() {
   if (authState.status === "error") {
     return (
       <AppShell active="stats">
-        <p className="text-red-300">{authState.message}</p>
+        <Alert variant="destructive">
+          <AlertDescription>{authState.message}</AlertDescription>
+        </Alert>
       </AppShell>
     );
   }
@@ -98,7 +107,14 @@ export default function StatsPage() {
   if (!isReady || !profileHook.isLoaded) {
     return (
       <AppShell active="stats">
-        <p className="text-white/70">Loading stats…</p>
+        <div className="space-y-4">
+          <Skeleton className="h-10 w-48" />
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <Skeleton key={index} className="h-24 rounded-2xl" />
+            ))}
+          </div>
+        </div>
       </AppShell>
     );
   }
@@ -137,68 +153,93 @@ export default function StatsPage() {
   return (
     <AppShell active="stats">
       <div className="space-y-6">
-        <div>
-          <p className="text-sm uppercase tracking-[0.3em] text-cyan-200/80">
-            Personal
-          </p>
-          <h1 className="text-3xl font-semibold">Your stats</h1>
+        <PageHeader
+          eyebrow="Personal"
+          title="Your stats"
+          description="Track streaks, win rate, and recent performance."
+        />
+
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <StatTile
+            label="Current streak"
+            value={`${profile?.currentStreak ?? 0} days`}
+            icon={Flame}
+            accent="hint"
+          />
+          <StatTile
+            label="Best streak"
+            value={`${profile?.maxStreak ?? 0} days`}
+            icon={BarChart3}
+            accent="primary"
+          />
+          <StatTile
+            label="Win rate"
+            value={`${winRate}%`}
+            icon={Percent}
+            accent="secondary"
+          />
+          <StatTile
+            label="Avg attempts (7d)"
+            value={avgAttempts}
+            icon={Target}
+          />
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { label: "Current streak", value: profile?.currentStreak ?? 0 },
-            { label: "Best streak", value: profile?.maxStreak ?? 0 },
-            { label: "Win rate", value: `${winRate}%` },
-            { label: "Avg attempts (7d)", value: avgAttempts },
-          ].map((item) => (
-            <div
-              key={item.label}
-              className="rounded-2xl border border-white/5 bg-white/[0.04] p-4"
-            >
-              <p className="text-sm text-white/60">{item.label}</p>
-              <p className="mt-1 text-2xl font-semibold">{item.value}</p>
-            </div>
-          ))}
-        </div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
+          {todayGame && todayGame.status !== "in_progress" && (
+            <SectionCard title="Today's replay">
+              <GameBoard
+                guesses={todayGame.guesses}
+                currentGuess=""
+                shakeRow={null}
+                revealRow={null}
+                isComplete
+                compact
+              />
+            </SectionCard>
+          )}
 
-        {todayGame && todayGame.status !== "in_progress" && (
-          <section className="rounded-3xl border border-white/5 bg-white/[0.04] p-6">
-            <h2 className="mb-4 text-xl font-semibold">Today&apos;s replay</h2>
-            <GameBoard
-              guesses={todayGame.guesses}
-              currentGuess=""
-              shakeRow={null}
-              revealRow={null}
-              isComplete
-            />
-          </section>
-        )}
-
-        <section className="rounded-3xl border border-white/5 bg-white/[0.04] p-6">
-          <h2 className="mb-4 text-xl font-semibold">Last 7 days</h2>
+          <SectionCard title="Last 7 days">
           {recentScores.length === 0 ? (
-            <p className="text-white/60">
+            <p className="text-muted-foreground">
               No completed games yet.{" "}
-              <Link href="/play" className="text-cyan-200">
+              <Link href="/play" className="text-primary hover:underline">
                 Play today&apos;s puzzle
               </Link>
             </p>
           ) : (
             <ul className="space-y-3">
-              {recentScores.map((score) => (
-                <li
-                  key={`${score.dateKey}-${score.userId}`}
-                  className="flex items-center justify-between rounded-xl bg-black/20 px-4 py-3 text-sm"
-                >
-                  <span>{score.dateKey}</span>
-                  <span className={score.won ? "text-emerald-300" : "text-red-300"}>
-                    {score.won ? `${score.attempts}/6` : "X/6"}
-                  </span>
-                </li>
-              ))}
+              {recentScores.map((score) => {
+                const barWidth = score.won
+                  ? `${(score.attempts / 6) * 100}%`
+                  : "100%";
+                return (
+                  <li
+                    key={`${score.dateKey}-${score.userId}`}
+                    className="rounded-xl bg-muted/30 px-4 py-3"
+                  >
+                    <div className="mb-2 flex items-center justify-between text-sm">
+                      <span>{score.dateKey}</span>
+                      <span className={score.won ? "text-secondary" : "text-destructive"}>
+                        {score.won ? `${score.attempts}/6` : "X/6"}
+                      </span>
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-background/60">
+                      <div
+                        className={cn(
+                          "h-full rounded-full transition-all",
+                          score.won ? "bg-secondary" : "bg-destructive/60"
+                        )}
+                        style={{ width: barWidth }}
+                      />
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           )}
-        </section>
+        </SectionCard>
+        </div>
       </div>
     </AppShell>
   );
