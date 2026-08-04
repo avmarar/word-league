@@ -26,7 +26,8 @@ service cloud.firestore {
     }
 
     match /{rootCollection}/{namespace}/users/{userId}/data/{docId} {
-      allow read, write: if isAuthenticated() && request.auth.uid == userId;
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && request.auth.uid == userId;
     }
   }
 }

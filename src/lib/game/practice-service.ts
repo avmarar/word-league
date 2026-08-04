@@ -8,6 +8,7 @@ import {
 import { getAdminFirestore } from "@/lib/firebase/admin";
 import { buildShareGrid, evaluateGuess } from "@/lib/game/evaluate";
 import { getRandomPracticeWord, isAllowedGuess } from "@/lib/words/loader";
+import { getWordDefinition } from "@/lib/words/definitions";
 import type { Difficulty } from "@/lib/words/difficulty";
 import { isDifficulty } from "@/lib/words/difficulty";
 
@@ -23,6 +24,8 @@ export function serializePracticeSession(
     guesses: session.guesses,
     status: session.status,
     durationMs: session.durationMs ?? null,
+    hintUsed: session.hintUsed ?? false,
+    hint: session.hint ?? null,
     shareGrid:
       session.status !== "in_progress"
         ? buildShareGrid(0, session.guesses, session.status === "won").replace(
@@ -127,5 +130,43 @@ export async function submitPracticeGuess(
   return {
     evaluation,
     ...serializePracticeSession(updatedSession, sessionId),
+  };
+}
+
+export async function requestPracticeHint(userId: string, sessionId: string) {
+  const sessionRef = getAdminFirestore().doc(`practiceSessions/${sessionId}`);
+  const snapshot = await sessionRef.get();
+
+  if (!snapshot.exists) {
+    throw new Error("Practice session not found.");
+  }
+
+  const session = snapshot.data() as PracticeSessionDocument;
+
+  if (session.userId !== userId) {
+    throw new Error("Practice session not found.");
+  }
+
+  if (session.status !== "in_progress") {
+    throw new Error("Hints are only available during an active game.");
+  }
+
+  if (session.hintUsed) {
+    return {
+      hintUsed: true,
+      hint: session.hint ?? null,
+    };
+  }
+
+  const hint = getWordDefinition(session.answer);
+
+  await sessionRef.update({
+    hintUsed: true,
+    hint,
+  });
+
+  return {
+    hintUsed: true,
+    hint,
   };
 }

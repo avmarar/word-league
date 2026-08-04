@@ -10,7 +10,8 @@
     "start": "next start",
     "lint": "eslint",
     "test:evaluate": "tsx tests/evaluate.test.ts",
-    "validate:words": "tsx scripts/validate-word-lists.ts"
+    "validate:words": "tsx scripts/validate-word-lists.ts",
+    "generate:definitions": "tsx scripts/generate-definitions.ts"
   },
   "dependencies": {
     "firebase": "^12.17.0",

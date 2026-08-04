@@ -20,6 +20,8 @@ export type GamePlayState = {
   status: GameStatus;
   durationMs: number | null;
   shareGrid: string | null;
+  hintUsed?: boolean;
+  hint?: string | null;
 };
 
 type GamePlayPanelProps = {
@@ -31,6 +33,7 @@ type GamePlayPanelProps = {
     durationMs: number | null;
     shareGrid: string | null;
   }>;
+  onRequestHint?: () => Promise<{ hintUsed: boolean; hint: string | null }>;
   onPlayAgain?: () => void;
   playAgainLabel?: string;
 };
@@ -39,6 +42,7 @@ export function GamePlayPanel({
   game,
   mode,
   onSubmitGuess,
+  onRequestHint,
   onPlayAgain,
   playAgainLabel = "Play again",
 }: GamePlayPanelProps) {
@@ -46,6 +50,9 @@ export function GamePlayPanel({
   const [status, setStatus] = useState(game.status);
   const [durationMs, setDurationMs] = useState<number | null>(game.durationMs);
   const [shareGrid, setShareGrid] = useState<string | null>(game.shareGrid);
+  const [hintUsed, setHintUsed] = useState(game.hintUsed ?? false);
+  const [hint, setHint] = useState<string | null>(game.hint ?? null);
+  const [loadingHint, setLoadingHint] = useState(false);
   const [currentGuess, setCurrentGuess] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,6 +66,8 @@ export function GamePlayPanel({
     setStatus(game.status);
     setDurationMs(game.durationMs);
     setShareGrid(game.shareGrid);
+    setHintUsed(game.hintUsed ?? false);
+    setHint(game.hint ?? null);
   }, [game]);
 
   useEffect(() => {
@@ -183,6 +192,27 @@ export function GamePlayPanel({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [status, submitting, submitGuess, handleKey]);
 
+  const handleHint = async () => {
+    if (!onRequestHint || hintUsed || loadingHint || status !== "in_progress") {
+      return;
+    }
+
+    setLoadingHint(true);
+    setError(null);
+
+    try {
+      const result = await onRequestHint();
+      setHintUsed(result.hintUsed);
+      setHint(result.hint);
+    } catch (hintError) {
+      setError(
+        hintError instanceof Error ? hintError.message : "Unable to fetch hint."
+      );
+    } finally {
+      setLoadingHint(false);
+    }
+  };
+
   const isComplete = status !== "in_progress";
 
   return (
@@ -217,11 +247,39 @@ export function GamePlayPanel({
       />
 
       {!isComplete && (
-        <Keyboard
-          keyStates={buildKeyStates(guesses)}
-          onKey={handleKey}
-          disabled={submitting}
-        />
+        <>
+          <Keyboard
+            keyStates={buildKeyStates(guesses)}
+            onKey={handleKey}
+            disabled={submitting}
+          />
+
+          {onRequestHint && (
+            <div className="flex flex-col items-center gap-3">
+              <button
+                type="button"
+                onClick={() => void handleHint()}
+                disabled={hintUsed || loadingHint || submitting}
+                className="rounded-full border border-amber-400/30 bg-amber-400/10 px-5 py-2 text-sm font-semibold text-amber-200 transition hover:bg-amber-400/20 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {loadingHint
+                  ? "Loading hint…"
+                  : hintUsed
+                    ? "Hint used"
+                    : "Get hint"}
+              </button>
+
+              {hint && (
+                <div className="w-full rounded-2xl border border-amber-400/20 bg-amber-400/10 px-4 py-3 text-sm text-amber-50">
+                  <p className="text-xs uppercase tracking-[0.2em] text-amber-200/80">
+                    Word meaning
+                  </p>
+                  <p className="mt-2 leading-relaxed">{hint}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </>
       )}
 
       {error && <p className="text-center text-sm text-red-300">{error}</p>}

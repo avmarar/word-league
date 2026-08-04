@@ -19,6 +19,8 @@ export type GameDocument = {
   difficulty: Difficulty;
   guesses: GuessRecord[];
   status: GameStatus;
+  hintUsed?: boolean;
+  hint?: string;
   startedAt: TimestampLike;
   finishedAt?: TimestampLike;
   durationMs?: number;
@@ -30,6 +32,8 @@ export type PracticeSessionDocument = {
   answer: string;
   guesses: GuessRecord[];
   status: GameStatus;
+  hintUsed?: boolean;
+  hint?: string;
   startedAt: TimestampLike;
   finishedAt?: TimestampLike;
   durationMs?: number;

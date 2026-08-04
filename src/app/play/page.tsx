@@ -130,6 +130,22 @@ export default function PlayPage() {
           setGame(merged);
           return merged;
         }}
+        onRequestHint={async () => {
+          const result = await apiPost<{
+            hintUsed: boolean;
+            hint: string | null;
+          }>("/api/game/hint");
+          setGame((previous) =>
+            previous
+              ? {
+                  ...previous,
+                  hintUsed: result.hintUsed,
+                  hint: result.hint,
+                }
+              : previous
+          );
+          return result;
+        }}
       />
     </AppShell>
   );

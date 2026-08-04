@@ -153,6 +153,22 @@ export default function PracticePage() {
           setSession(result);
           return result;
         }}
+        onRequestHint={async () => {
+          const result = await apiPost<{
+            hintUsed: boolean;
+            hint: string | null;
+          }>("/api/practice/hint", { sessionId: session.sessionId });
+          setSession((previous) =>
+            previous
+              ? {
+                  ...previous,
+                  hintUsed: result.hintUsed,
+                  hint: result.hint,
+                }
+              : previous
+          );
+          return result;
+        }}
         onPlayAgain={() =>
           void startPractice(session.difficulty ?? selectedDifficulty)
         }

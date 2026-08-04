@@ -9,6 +9,7 @@ import { getAdminFirestore } from "@/lib/firebase/admin";
 import { getDateKey, getYesterdayDateKey } from "@/lib/dates";
 import { buildShareGrid, evaluateGuess } from "@/lib/game/evaluate";
 import { getAnswerWords, isAllowedGuess } from "@/lib/words/loader";
+import { getWordDefinition } from "@/lib/words/definitions";
 import { getDailyDifficulty, getDailyWord, getPuzzleNumber } from "@/lib/words/selector";
 import { getGameDocId, getProfilePath, getScoreDocId } from "@/lib/game/ids";
 
@@ -65,6 +66,8 @@ export function serializeGame(game: GameDocument) {
     guesses: game.guesses,
     status: game.status,
     durationMs: game.durationMs ?? null,
+    hintUsed: game.hintUsed ?? false,
+    hint: game.hint ?? null,
     shareGrid: game.status !== "in_progress" ? buildShareGridFromGame(game) : null,
   };
 }
@@ -157,6 +160,43 @@ export async function submitGuess(
       status !== "in_progress"
         ? buildShareGrid(game.puzzleNumber, guesses, won)
         : null,
+  };
+}
+
+export async function requestGameHint(userId: string) {
+  const dateKey = getDateKey();
+  const db = getAdminFirestore();
+  const gameRef = db.doc(`games/${getGameDocId(userId, dateKey)}`);
+  const gameSnapshot = await gameRef.get();
+
+  if (!gameSnapshot.exists) {
+    throw new Error("Start the game before requesting a hint.");
+  }
+
+  const game = gameSnapshot.data() as GameDocument;
+
+  if (game.status !== "in_progress") {
+    throw new Error("Hints are only available during an active game.");
+  }
+
+  if (game.hintUsed) {
+    return {
+      hintUsed: true,
+      hint: game.hint ?? null,
+    };
+  }
+
+  const answer = getDailyWord(dateKey, getAnswerWords());
+  const hint = getWordDefinition(answer);
+
+  await gameRef.update({
+    hintUsed: true,
+    hint,
+  });
+
+  return {
+    hintUsed: true,
+    hint,
   };
 }
 

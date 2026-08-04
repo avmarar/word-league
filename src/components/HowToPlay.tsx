@@ -108,10 +108,11 @@ export function HowToPlay() {
           is CRANE and you guess PLANT, the A and N turn green because they are
           in the right spots.
         </p>
-        <p className="mt-2">
-          You can play the daily challenge once per day for a ranked score. Use
-          practice mode to keep sharpening your skills between dailies.
-        </p>
+          <p className="mt-2">
+            You can play the daily challenge once per day for a ranked score. Use
+            practice mode to keep sharpening your skills between dailies. Each game
+            includes one hint that reveals the word&apos;s meaning.
+          </p>
       </div>
     </section>
   );
