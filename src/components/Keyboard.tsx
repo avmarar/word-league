@@ -17,7 +17,7 @@ export function Keyboard({ keyStates, onKey, disabled }: KeyboardProps) {
 
   return (
     <div
-      className="z-40 flex w-full max-w-full flex-col gap-1.5 max-md:sticky max-md:bottom-[calc(4.25rem+env(safe-area-inset-bottom))] md:static md:max-w-none lg:mx-auto lg:max-w-lg"
+      className="z-40 flex w-full max-w-full flex-col gap-1.5 max-md:sticky max-md:bottom-[calc(4.25rem+env(safe-area-inset-bottom))] md:static md:max-w-none lg:hidden"
       role="group"
       aria-label="On-screen keyboard"
     >
