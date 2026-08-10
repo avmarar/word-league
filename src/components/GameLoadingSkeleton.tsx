@@ -15,7 +15,7 @@ export function GameLoadingSkeleton({
         {Array.from({ length: 6 }).map((_, row) => (
           <div key={row} className="flex gap-2">
             {Array.from({ length: 5 }).map((__, col) => (
-              <Skeleton key={col} className="size-14 rounded-xl md:size-[4.25rem] lg:size-16" />
+              <Skeleton key={col} className="size-[min(3.25rem,calc((100vw-3.5rem)/5))] rounded-xl sm:size-14 md:size-[4.25rem] lg:size-16" />
             ))}
           </div>
         ))}

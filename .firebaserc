@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "production": "word-league-prod"
+  },
+  "targets": {},
+  "etags": {}
+}

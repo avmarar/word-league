@@ -24,7 +24,8 @@ function tileClass(
   revealed: boolean,
   isPop: boolean
 ) {
-  const base = "game-tile h-14 w-14 text-xl md:h-[4.25rem] md:w-[4.25rem] lg:h-16 lg:w-16";
+  const base =
+    "game-tile size-[min(3.25rem,calc((100vw-3.5rem)/5))] text-lg sm:size-14 sm:text-xl md:size-[4.25rem] lg:size-16";
 
   if (!revealed && state !== "empty" && state !== "current") {
     return cn(base, TILE_FLIPPING_CLASS);
@@ -56,7 +57,7 @@ export function GameBoard({
 
   return (
     <div
-      className="flex flex-col items-center gap-2"
+      className="flex w-full max-w-full flex-col items-center gap-1.5 sm:gap-2"
       role="grid"
       aria-label="Game board"
     >
@@ -72,7 +73,7 @@ export function GameBoard({
             key={rowIndex}
             role="row"
             className={cn(
-              "flex gap-2",
+              "flex gap-1.5 sm:gap-2",
               isShaking && "animate-shake",
               isCelebrating && "animate-celebrate rounded-xl"
             )}

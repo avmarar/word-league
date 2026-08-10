@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fredoka, Geist } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
@@ -17,6 +17,13 @@ const fredoka = Fredoka({
 export const metadata: Metadata = {
   title: "Word League",
   description: "Daily word puzzle for office team engagement.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#1a1024",
 };
 
 export default function RootLayout({

@@ -83,11 +83,16 @@
 
   html {
     @apply font-sans;
+    overflow-x: clip;
   }
 
   body {
     min-height: 100vh;
+    min-height: 100dvh;
     margin: 0;
+    overflow-x: clip;
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
     background:
       radial-gradient(
         circle at 15% 10%,

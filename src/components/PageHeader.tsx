@@ -20,7 +20,7 @@ export function PageHeader({
           {eyebrow}
         </p>
       )}
-      <h1 className="font-display text-3xl font-semibold tracking-tight md:text-4xl lg:text-4xl">
+      <h1 className="font-display text-3xl font-semibold tracking-tight sm:text-3xl md:text-4xl lg:text-4xl">
         {title}
       </h1>
       {description && (

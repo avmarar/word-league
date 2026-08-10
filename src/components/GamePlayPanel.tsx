@@ -260,7 +260,7 @@ export function GamePlayPanel({
       : "Practice game";
 
   return (
-    <div className="mx-auto flex w-full max-w-lg flex-col gap-6 md:max-w-3xl lg:max-w-lg">
+    <div className="mx-auto flex w-full max-w-lg flex-col gap-4 sm:gap-6 md:max-w-3xl lg:max-w-lg">
       <div aria-live="polite" aria-atomic="true" className="sr-only">
         {announcement}
       </div>

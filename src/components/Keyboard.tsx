@@ -13,16 +13,16 @@ type KeyboardProps = {
 
 export function Keyboard({ keyStates, onKey, disabled }: KeyboardProps) {
   const keyBase =
-    "min-h-11 min-w-[2rem] rounded-xl px-2.5 py-3 text-sm font-semibold uppercase shadow-sm transition active:scale-95 sm:min-w-[2.5rem]";
+    "flex h-12 min-w-0 flex-1 items-center justify-center rounded-lg text-xs font-semibold uppercase shadow-sm transition active:scale-95 sm:h-11 sm:rounded-xl sm:text-sm";
 
   return (
     <div
-      className="z-40 flex w-full flex-col gap-2 max-md:sticky max-md:bottom-24 md:static md:max-w-none lg:mx-auto lg:max-w-lg"
+      className="z-40 flex w-full max-w-full flex-col gap-1.5 max-md:sticky max-md:bottom-[calc(4.25rem+env(safe-area-inset-bottom))] md:static md:max-w-none lg:mx-auto lg:max-w-lg"
       role="group"
       aria-label="On-screen keyboard"
     >
       {ROWS.map((row, rowIndex) => (
-        <div key={row} className="flex justify-center gap-1.5">
+        <div key={row} className="flex w-full gap-1 sm:gap-1.5">
           {rowIndex === 2 && (
             <button
               type="button"
@@ -31,12 +31,12 @@ export function Keyboard({ keyStates, onKey, disabled }: KeyboardProps) {
               aria-label="Submit guess"
               className={cn(
                 keyBase,
-                "px-3",
+                "max-w-[14%]",
                 keyboardKeyClass("unused"),
                 "disabled:opacity-50"
               )}
             >
-              <CornerDownLeft className="mx-auto size-4" />
+              <CornerDownLeft className="size-4" />
             </button>
           )}
           {row.split("").map((key) => (
@@ -46,7 +46,11 @@ export function Keyboard({ keyStates, onKey, disabled }: KeyboardProps) {
               disabled={disabled}
               onClick={() => onKey(key)}
               aria-label={`Letter ${key}`}
-              className={cn(keyBase, keyboardKeyClass(keyStates[key] ?? "unused"), "disabled:opacity-50")}
+              className={cn(
+                keyBase,
+                keyboardKeyClass(keyStates[key] ?? "unused"),
+                "disabled:opacity-50"
+              )}
             >
               {key}
             </button>
@@ -59,12 +63,12 @@ export function Keyboard({ keyStates, onKey, disabled }: KeyboardProps) {
               aria-label="Delete letter"
               className={cn(
                 keyBase,
-                "px-3",
+                "max-w-[14%]",
                 keyboardKeyClass("unused"),
                 "disabled:opacity-50"
               )}
             >
-              <Delete className="mx-auto size-4" />
+              <Delete className="size-4" />
             </button>
           )}
         </div>
