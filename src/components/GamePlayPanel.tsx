@@ -281,7 +281,7 @@ export function GamePlayPanel({
 
       <div
         className={cn(
-          "flex flex-col gap-6",
+          "flex flex-col lg:items-center gap-6",
           !isComplete &&
             "md:grid md:grid-cols-[auto_minmax(0,1fr)] md:items-start md:gap-8 lg:flex lg:flex-col"
         )}
